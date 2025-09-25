@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirSense</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .hero-text {
+            max-width: 600px;
+        }
+        
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-size: 0.875rem;
+            color: #22c55e;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+        
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #94a3b8;
+            margin-bottom: 3rem;
+            max-width: 500px;
+        }
+        
+        .hero-form {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-subtitle {
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 2rem;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.75rem;
+            color: #f1f5f9;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(30, 41, 59, 0.6);
+            border: 2px solid rgba(51, 65, 85, 0.5);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        .form-input:focus {
+            border-color: #22c55e;
+            background: rgba(30, 41, 59, 0.8);
+            box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: #64748b;
+        }
+        
+        .budget-container {
+            position: relative;
+        }
+        
+        .budget-slider {
+            width: 100%;
+            height: 8px;
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 4px;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .budget-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(34, 197, 94, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .budget-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(34, 197, 94, 0.4);
+        }
+        
+        .budget-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1rem;
+        }
+        
+        .budget-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #22c55e;
+        }
+        
+        .budget-range {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        .analyze-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+            color: #ffffff;
+            border: none;
+            padding: 1.25rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+            margin-top: 1rem;
+        }
+        
+        .analyze-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(34, 197, 94, 0.3);
+        }
+        
+        .analyze-btn:disabled {
+            background: rgba(51, 65, 85, 0.5);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .results-section {
+            background: #0f172a;
+            min-height: 100vh;
+            padding: 4rem 0;
+            display: none;
+        }
+        
+        .results-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        
+        .results-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 1rem;
+        }
+        
+        .results-subtitle {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 3rem;
+            margin-bottom: 4rem;
+        }
+        
+        .location-analysis {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 20px;
+            padding: 2.5rem;
+        }
+        
+        .analysis-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .analysis-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+        }
+        
+        .analysis-item:last-child {
+            border-bottom: none;
+        }
+        
+        .analysis-label {
+            color: #94a3b8;
+            font-weight: 500;
+        }
+        
+        .analysis-value {
+            font-weight: 600;
+            color: #ffffff;
+        }
+        
+        .aqi-value {
+            color: #ef4444;
+        }
+        
+        .interventions-container {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+            border-radius: 20px;
+            padding: 2.5rem;
+        }
+        
+        .intervention-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .intervention-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+        }
+        
+        .intervention-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+        
+        .intervention-header {
+            display: flex;
+            justify-content: between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .intervention-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .intervention-priority {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .priority-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .priority-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .priority-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        
+        .intervention-description {
+            color: #cbd5e1;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .intervention-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+        
+        .metric {
+            background: rgba(30, 41, 59, 0.6);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #22c55e;
+            display: block;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+        }
+        
+        .budget-scaling {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .budget-scaling-title {
+            color: #3b82f6;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .loading-content {
+            text-align: center;
+            max-width: 400px;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(51, 65, 85, 0.3);
+            border-top: 4px solid #22c55e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+        
+        .loading-text {
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+        
+        .loading-subtext {
+            color: #94a3b8;
+            font-size: 0.95rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .hero-form {
+                order: -1;
+                padding: 2rem;
+            }
+            
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .intervention-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+                        </svg>
+                        AI-Powered Environmental Solutions
+                    </div>
+                    <h1 class="hero-title">Transform Your Community's Air Quality</h1>
+                    <p class="hero-subtitle">
+                        Get intelligent, data-driven interventions tailored to your location's specific air quality challenges and budget constraints.
+                    </p>
+                </div>
+                
+                <div class="hero-form">
+                    <div class="form-header">
+                        <h2 class="form-title">Smart AQI Analysis</h2>
+                        <p class="form-subtitle">Enter your location to get AI-powered intervention recommendations</p>
+                    </div>
+                    
+                    <form id="analysisForm">
+                        <div class="form-group">
+                            <label class="form-label" for="location">
+                                Location
+                            </label>
+                            <input 
+                                type="text" 
+                                id="location" 
+                                class="form-input"
+                                placeholder="e.g., Connaught Place, New Delhi"
+                                required
+                            />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="budget">
+                                $ Available Budget
+                            </label>
+                            <div class="budget-container">
+                                <input 
+                                    type="range" 
+                                    id="budget" 
+                                    class="budget-slider"
+                                    min="25000" 
+                                    max="2000000" 
+                                    value="200000" 
+                                    step="25000"
+                                />
+                                <div class="budget-display">
+                                    <div class="budget-value">₹ <span id="budgetValue">2,00,000</span></div>
+                                    <div class="budget-range">₹25K - ₹20L</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="analyze-btn" id="analyzeBtn">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                            Analyze & Generate Solutions
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="results-section" id="resultsSection">
+        <div class="container">
+            <div class="results-header">
+                <h2 class="results-title">AI Analysis Results</h2>
+                <p class="results-subtitle">Comprehensive air quality assessment and intervention recommendations for your location</p>
+            </div>
+            
+            <div class="analysis-grid">
+                <div class="location-analysis">
+                    <h3 class="analysis-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                        </svg>
+                        Location Intelligence
+                    </h3>
+                    <div id="locationData">
+                    </div>
+                </div>
+                
+                <div class="interventions-container">
+                    <h3 class="analysis-title">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"/>
+                            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
+                        </svg>
+                        Recommended Interventions
+                    </h3>
+                    <div id="interventionsData">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Analyzing Your Location</div>
+            <div class="loading-subtext">AI is processing environmental data and generating tailored solutions...</div>
+        </div>
+    </div>
+
+    <script>
+        const budgetSlider = document.getElementById('budget');
+        const budgetValue = document.getElementById('budgetValue');
+        
+        budgetSlider.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            budgetValue.textContent = value.toLocaleString('en-IN');
+        });
+        
+        document.getElementById('analysisForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const location = document.getElementById('location').value;
+            const budget = document.getElementById('budget').value;
+            
+            await analyzeLocation(location, budget);
+        });
+        
+        async function analyzeLocation(location, budget) {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+            document.getElementById('analyzeBtn').disabled = true;
+            
+            try {
+                const analysis = await generateAnalysis(location, budget);
+                displayResults(analysis, location, budget);
+                
+                document.getElementById('resultsSection').style.display = 'block';
+                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error analyzing location. Please check your API configuration and try again.');
+            } finally {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('analyzeBtn').disabled = false;
+            }
+        }
+        
+        async function generateAnalysis(location, budget) {
+            const response = await fetch('/api/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    location: location,
+                    budget: budget
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Server request failed: ${response.status}`);
+            }
+            
+            return await response.json();
+        }
+        
+        function displayResults(data, location, budget) {
+            const locationData = document.getElementById('locationData');
+            const analysis = data.location_analysis;
+            
+            locationData.innerHTML = `
+                <div class="analysis-item">
+                    <span class="analysis-label">Current AQI</span>
+                    <span class="analysis-value aqi-value">${analysis.estimated_aqi}</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Air Quality</span>
+                    <span class="analysis-value">${analysis.air_quality_status}</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Area Type</span>
+                    <span class="analysis-value">${analysis.area_type}</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Traffic Density</span>
+                    <span class="analysis-value">${analysis.traffic_density}</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Industrial Activity</span>
+                    <span class="analysis-value">${analysis.industrial_activity}</span>
+                </div>
+                <div class="analysis-item">
+                    <span class="analysis-label">Vegetation Cover</span>
+                    <span class="analysis-value">${analysis.vegetation_cover}</span>
+                </div>
+            `;
+            
+            const interventionsData = document.getElementById('interventionsData');
+            interventionsData.innerHTML = '';
+            
+            data.interventions.forEach((intervention, index) => {
+                const priorityClass = `priority-${intervention.priority.toLowerCase()}`;
+                
+                const card = document.createElement('div');
+                card.className = 'intervention-card';
+                card.innerHTML = `
+                    <div class="intervention-header">
+                        <div>
+                            <h4 class="intervention-title">${index + 1}. ${intervention.title}</h4>
+                            <span class="intervention-priority ${priorityClass}">${intervention.priority} Priority</span>
+                        </div>
+                    </div>
+                    
+                    <p class="intervention-description">${intervention.description}</p>
+                    
+                    <div class="intervention-metrics">
+                        <div class="metric">
+                            <span class="metric-value">${intervention.estimated_cost}</span>
+                            <span class="metric-label">Estimated Cost</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">${intervention.expected_aqi_improvement}</span>
+                            <span class="metric-label">AQI Improvement</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">${intervention.implementation_time}</span>
+                            <span class="metric-label">Timeline</span>
+                        </div>
+                        <div class="metric">
+                            <span class="metric-value">${intervention.feasibility_score}</span>
+                            <span class="metric-label">Feasibility</span>
+                        </div>
+                    </div>
+                    
+                    ${intervention.budget_scaling ? `
+                        <div class="budget-scaling">
+                            <div class="budget-scaling-title">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                </svg>
+                                Budget Scaling Opportunity
+                            </div>
+                            <p style="color: #cbd5e1; font-size: 0.95rem;">${intervention.budget_scaling}</p>
+                        </div>
+                    ` : ''}
+                `;
+                
+                interventionsData.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
