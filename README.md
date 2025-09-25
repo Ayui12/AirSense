@@ -137,10 +137,10 @@ Sample response:
 
 ## Screenshots
 
-![Homepage]
+[Homepage]
 <img width="1917" height="885" alt="image" src="https://github.com/user-attachments/assets/eca1bd11-71b5-4050-b6bb-415fa1178c12" />
 
-![Results]
+[Results]
 <img width="1895" height="949" alt="image" src="https://github.com/user-attachments/assets/7993c669-20e3-4093-ba3a-8b86a6570941" />
 <img width="1856" height="872" alt="image" src="https://github.com/user-attachments/assets/502f157d-dcf2-476a-b289-e5355d35b645" />
 
