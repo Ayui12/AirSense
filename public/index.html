@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AirSense</title>
+    <title>AirSense - Real-Time Air Quality Intelligence</title>
     <style>
         * {
             margin: 0;
@@ -13,18 +13,71 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #0f172a;
+            background: #0a0e1a;
             color: #e2e8f0;
             line-height: 1.6;
             overflow-x: hidden;
         }
+
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.3);
+            padding: 1rem 2rem;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #22c55e, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-info {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .data-badge {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        .api-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22c55e;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
         
         .hero-section {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            background: linear-gradient(135deg, #0a0e1a 0%, #1e293b 50%, #0a0e1a 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             position: relative;
+            padding-top: 5rem;
         }
         
         .hero-section::before {
@@ -35,9 +88,15 @@
             right: 0;
             bottom: 0;
             background: 
-                radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 20%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%);
             pointer-events: none;
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
         
         .container {
@@ -63,20 +122,20 @@
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            background: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.2));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            padding: 0.75rem 1.5rem;
             border-radius: 50px;
             font-size: 0.875rem;
             color: #22c55e;
             margin-bottom: 2rem;
-            font-weight: 500;
+            font-weight: 600;
         }
         
         .hero-title {
             font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 800;
-            background: linear-gradient(135deg, #ffffff 0%, #22c55e 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #22c55e 50%, #3b82f6 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -90,14 +149,57 @@
             margin-bottom: 3rem;
             max-width: 500px;
         }
+
+        .data-sources {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .data-source {
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            border-radius: 12px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .data-source:hover {
+            background: rgba(30, 41, 59, 0.6);
+            border-color: rgba(34, 197, 94, 0.3);
+            transform: translateX(5px);
+        }
+
+        .source-icon {
+            font-size: 1.5rem;
+        }
+
+        .source-text {
+            flex: 1;
+        }
+
+        .source-name {
+            font-size: 0.9rem;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+
+        .source-desc {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
         
         .hero-form {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(51, 65, 85, 0.5);
             border-radius: 24px;
             padding: 3rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
         
         .form-header {
@@ -132,7 +234,7 @@
         .form-input {
             width: 100%;
             padding: 1rem 1.25rem;
-            background: rgba(30, 41, 59, 0.6);
+            background: rgba(15, 23, 42, 0.8);
             border: 2px solid rgba(51, 65, 85, 0.5);
             border-radius: 12px;
             color: #ffffff;
@@ -143,16 +245,12 @@
         
         .form-input:focus {
             border-color: #22c55e;
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(15, 23, 42, 0.9);
             box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
         }
         
         .form-input::placeholder {
             color: #64748b;
-        }
-        
-        .budget-container {
-            position: relative;
         }
         
         .budget-slider {
@@ -212,6 +310,10 @@
             transition: all 0.3s ease;
             box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
             margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
         
         .analyze-btn:hover:not(:disabled) {
@@ -227,15 +329,15 @@
         }
         
         .results-section {
-            background: #0f172a;
+            background: #0a0e1a;
             min-height: 100vh;
-            padding: 4rem 0;
+            padding: 6rem 0 4rem;
             display: none;
         }
         
         .results-header {
             text-align: center;
-            margin-bottom: 4rem;
+            margin-bottom: 3rem;
         }
         
         .results-title {
@@ -251,6 +353,30 @@
             max-width: 600px;
             margin: 0 auto;
         }
+
+        .data-sources-banner {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 3rem;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .source-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .source-badge-icon {
+            color: #22c55e;
+        }
         
         .analysis-grid {
             display: grid;
@@ -265,6 +391,7 @@
             border: 1px solid rgba(51, 65, 85, 0.5);
             border-radius: 20px;
             padding: 2.5rem;
+            height: fit-content;
         }
         
         .analysis-title {
@@ -300,7 +427,33 @@
         }
         
         .aqi-value {
-            color: #ef4444;
+            font-size: 1.2rem;
+        }
+
+        .aqi-good { color: #22c55e; }
+        .aqi-moderate { color: #eab308; }
+        .aqi-unhealthy-sensitive { color: #f97316; }
+        .aqi-unhealthy { color: #ef4444; }
+        .aqi-very-unhealthy { color: #dc2626; }
+        .aqi-hazardous { color: #991b1b; }
+
+        .aqi-gauge {
+            margin: 2rem 0;
+            padding: 2rem;
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            text-align: center;
+        }
+
+        .gauge-value {
+            font-size: 3rem;
+            font-weight: 800;
+        }
+
+        .gauge-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
         
         .interventions-container {
@@ -340,7 +493,7 @@
         
         .intervention-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1rem;
         }
@@ -396,6 +549,12 @@
             padding: 1rem;
             border-radius: 12px;
             text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric:hover {
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-2px);
         }
         
         .metric-value {
@@ -427,6 +586,114 @@
             align-items: center;
             gap: 0.5rem;
         }
+
+        .science-box {
+            background: rgba(34, 197, 94, 0.05);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .science-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+        }
+
+        .science-metric:last-child {
+            border-bottom: none;
+        }
+
+        .science-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .science-value {
+            color: #22c55e;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .pollution-source {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid #ef4444;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .source-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .source-name {
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .source-contribution {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .source-pollutants {
+            color: #cbd5e1;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+
+        .optimization-card {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .optimization-title {
+            color: #3b82f6;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+
+        .optimization-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .optimization-metric {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 1.25rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .optimization-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .optimization-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
         
         .loading-overlay {
             position: fixed;
@@ -434,7 +701,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(15, 23, 42, 0.95);
+            background: rgba(10, 14, 26, 0.95);
             backdrop-filter: blur(10px);
             display: none;
             align-items: center;
@@ -444,33 +711,89 @@
         
         .loading-content {
             text-align: center;
-            max-width: 400px;
+            max-width: 500px;
         }
         
         .loading-spinner {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border: 4px solid rgba(51, 65, 85, 0.3);
             border-top: 4px solid #22c55e;
+            border-right: 4px solid #3b82f6;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 2rem;
         }
         
         .loading-text {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             color: #ffffff;
             margin-bottom: 0.5rem;
+            font-weight: 700;
         }
         
         .loading-subtext {
             color: #94a3b8;
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .loading-steps {
+            text-align: left;
+            background: rgba(30, 41, 59, 0.5);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .loading-step {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            color: #64748b;
             font-size: 0.95rem;
+        }
+
+        .loading-step.active {
+            color: #22c55e;
+        }
+
+        .step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid currentColor;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .loading-step.active .step-icon {
+            background: #22c55e;
+            border-color: #22c55e;
+            color: #0a0e1a;
+            animation: pulse-icon 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-icon {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-top: 1rem;
+            display: none;
         }
         
         @media (max-width: 768px) {
@@ -480,7 +803,6 @@
             }
             
             .hero-form {
-                order: -1;
                 padding: 2rem;
             }
             
@@ -491,36 +813,81 @@
             .intervention-metrics {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .data-sources {
+                grid-template-columns: 1fr;
+            }
+
+            .data-sources-banner {
+                flex-direction: column;
+                gap: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <nav class="nav">
+        <div class="logo">AirSense AI</div>
+        <div class="nav-info">
+            <div class="api-status"></div>
+            <div class="data-badge">Real-Time Data</div>
+        </div>
+    </nav>
+
     <section class="hero-section">
         <div class="container">
             <div class="hero-content">
                 <div class="hero-text">
                     <div class="hero-badge">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
-                        </svg>
-                        AI-Powered Environmental Solutions
+                        Real Environmental Data + GenAI Intelligence
                     </div>
-                    <h1 class="hero-title">Transform Your Community's Air Quality</h1>
+                    <h1 class="hero-title">Welcome to Air Sense AI</h1>
                     <p class="hero-subtitle">
-                        Get intelligent, data-driven interventions tailored to your location's specific air quality challenges and budget constraints.
+                        Combining real-time environmental data with Gemini AI to generate accurate, implementable interventions for your community.
                     </p>
+
+                    <div class="data-sources">
+                        <div class="data-source">
+                            <div class="source-icon">API</div>
+                            <div class="source-text">
+                                <div class="source-name">IQAir / OpenWeather</div>
+                                <div class="source-desc">Live AQI Data</div>
+                            </div>
+                        </div>
+                        <div class="data-source">
+                            <div class="source-icon">GPS</div>
+                            <div class="source-text">
+                                <div class="source-name">Geocoding API</div>
+                                <div class="source-desc">Location Intel</div>
+                            </div>
+                        </div>
+                        <div class="data-source">
+                            <div class="source-icon">PY</div>
+                            <div class="source-text">
+                                <div class="source-name">Python Analysis</div>
+                                <div class="source-desc">Scientific Computing</div>
+                            </div>
+                        </div>
+                        <div class="data-source">
+                            <div class="source-icon">AI</div>
+                            <div class="source-text">
+                                <div class="source-name">Gemini AI</div>
+                                <div class="source-desc">Smart Recommendations</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="hero-form">
                     <div class="form-header">
-                        <h2 class="form-title">Smart AQI Analysis</h2>
-                        <p class="form-subtitle">Enter your location to get AI-powered intervention recommendations</p>
+                        <h2 class="form-title">Real-Time Analysis</h2>
+                        <p class="form-subtitle">Get data-driven interventions powered by live environmental data</p>
                     </div>
                     
                     <form id="analysisForm">
                         <div class="form-group">
                             <label class="form-label" for="location">
-                                Location
+                                Location (City or Address)
                             </label>
                             <input 
                                 type="text" 
@@ -533,9 +900,9 @@
                         
                         <div class="form-group">
                             <label class="form-label" for="budget">
-                                $ Available Budget
+                                Available Budget
                             </label>
-                            <div class="budget-container">
+                            <div>
                                 <input 
                                     type="range" 
                                     id="budget" 
@@ -553,11 +920,10 @@
                         </div>
                         
                         <button type="submit" class="analyze-btn" id="analyzeBtn">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                            </svg>
-                            Analyze & Generate Solutions
+                            Analyze with Real Data + AI
                         </button>
+
+                        <div class="error-message" id="errorMessage"></div>
                     </form>
                 </div>
             </div>
@@ -567,32 +933,55 @@
     <section class="results-section" id="resultsSection">
         <div class="container">
             <div class="results-header">
-                <h2 class="results-title">AI Analysis Results</h2>
-                <p class="results-subtitle">Comprehensive air quality assessment and intervention recommendations for your location</p>
+                <h2 class="results-title">Analysis Results</h2>
+                <p class="results-subtitle">AI-generated recommendations based on real environmental data</p>
+            </div>
+
+            <div class="data-sources-banner">
+                <div class="source-badge">
+                    <span class="source-badge-icon">✓</span>
+                    <span>Real AQI Data</span>
+                </div>
+                <div class="source-badge">
+                    <span class="source-badge-icon">✓</span>
+                    <span>Weather Analysis</span>
+                </div>
+                <div class="source-badge">
+                    <span class="source-badge-icon">✓</span>
+                    <span>Location Intelligence</span>
+                </div>
+                <div class="source-badge">
+                    <span class="source-badge-icon">✓</span>
+                    <span>Gemini AI Recommendations</span>
+                </div>
             </div>
             
             <div class="analysis-grid">
                 <div class="location-analysis">
                     <h3 class="analysis-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                        </svg>
-                        Location Intelligence
+                        Environmental Data
                     </h3>
-                    <div id="locationData">
+
+                    <div class="aqi-gauge">
+                        <div class="gauge-value" id="gaugeValue">--</div>
+                        <div class="gauge-label">Real-Time AQI</div>
+                    </div>
+
+                    <div id="locationData"></div>
+                    
+                    <div id="scientificAnalysis" style="margin-top: 2rem; display: none;">
+                        <h4 style="color: #22c55e; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Scientific Analysis</h4>
+                        <div id="scientificContent"></div>
                     </div>
                 </div>
                 
                 <div class="interventions-container">
                     <h3 class="analysis-title">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M9 12l2 2 4-4"/>
-                            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/>
-                        </svg>
-                        Recommended Interventions
+                        AI-Generated Interventions
                     </h3>
-                    <div id="interventionsData">
-                    </div>
+                    <div id="interventionsData"></div>
+                    
+                    <div id="optimizationSummary" style="display: none; margin-top: 2rem;"></div>
                 </div>
             </div>
         </div>
@@ -601,14 +990,36 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <div class="loading-text">Analyzing Your Location</div>
-            <div class="loading-subtext">AI is processing environmental data and generating tailored solutions...</div>
+            <div class="loading-text">Processing Your Request</div>
+            <div class="loading-subtext">Fetching real-time data and generating AI recommendations...</div>
+            
+            <div class="loading-steps">
+                <div class="loading-step" id="step1">
+                    <div class="step-icon">1</div>
+                    <span>Fetching real-time AQI data</span>
+                </div>
+                <div class="loading-step" id="step2">
+                    <div class="step-icon">2</div>
+                    <span>Analyzing weather & location data</span>
+                </div>
+                <div class="loading-step" id="step3">
+                    <div class="step-icon">3</div>
+                    <span>Processing with Python analytics</span>
+                </div>
+                <div class="loading-step" id="step4">
+                    <div class="step-icon">4</div>
+                    <span>Generating AI recommendations with Gemini</span>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
+        const API_URL = 'http://localhost:3000';
+        
         const budgetSlider = document.getElementById('budget');
         const budgetValue = document.getElementById('budgetValue');
+        const errorMessage = document.getElementById('errorMessage');
         
         budgetSlider.addEventListener('input', function() {
             const value = parseInt(this.value);
@@ -621,131 +1032,263 @@
             const location = document.getElementById('location').value;
             const budget = document.getElementById('budget').value;
             
+            errorMessage.style.display = 'none';
             await analyzeLocation(location, budget);
         });
+        
+        async function simulateLoadingSteps() {
+            const steps = ['step1', 'step2', 'step3', 'step4'];
+            for (let i = 0; i < steps.length; i++) {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                document.getElementById(steps[i]).classList.add('active');
+            }
+        }
         
         async function analyzeLocation(location, budget) {
             document.getElementById('loadingOverlay').style.display = 'flex';
             document.getElementById('analyzeBtn').disabled = true;
             
+            ['step1', 'step2', 'step3', 'step4'].forEach(step => {
+                document.getElementById(step).classList.remove('active');
+            });
+            
+            simulateLoadingSteps();
+            
             try {
-                const analysis = await generateAnalysis(location, budget);
+                const response = await fetch(`${API_URL}/api/analyze`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        location: location,
+                        budget: budget
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server returned ${response.status}`);
+                }
+                
+                const analysis = await response.json();
+                
+                if (analysis.error) {
+                    throw new Error(analysis.error);
+                }
+                
                 displayResults(analysis, location, budget);
                 
                 document.getElementById('resultsSection').style.display = 'block';
-                document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+                setTimeout(() => {
+                    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
+                }, 100);
                 
             } catch (error) {
-                console.error('Error:', error);
-                alert('Error analyzing location. Please check your API configuration and try again.');
+                console.error('Analysis failed:', error);
+                errorMessage.textContent = `Error: ${error.message}. Please ensure the server is running on port 3000.`;
+                errorMessage.style.display = 'block';
             } finally {
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('analyzeBtn').disabled = false;
             }
         }
         
-        async function generateAnalysis(location, budget) {
-            const response = await fetch('/api/analyze', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    location: location,
-                    budget: budget
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`Server request failed: ${response.status}`);
-            }
-            
-            return await response.json();
+        function getAQIClass(aqi) {
+            if (aqi <= 50) return 'aqi-good';
+            if (aqi <= 100) return 'aqi-moderate';
+            if (aqi <= 150) return 'aqi-unhealthy-sensitive';
+            if (aqi <= 200) return 'aqi-unhealthy';
+            if (aqi <= 300) return 'aqi-very-unhealthy';
+            return 'aqi-hazardous';
+        }
+
+        function getAQIStatus(aqi) {
+            if (aqi <= 50) return 'Good';
+            if (aqi <= 100) return 'Moderate';
+            if (aqi <= 150) return 'Unhealthy for Sensitive Groups';
+            if (aqi <= 200) return 'Unhealthy';
+            if (aqi <= 300) return 'Very Unhealthy';
+            return 'Hazardous';
         }
         
         function displayResults(data, location, budget) {
-            const locationData = document.getElementById('locationData');
             const analysis = data.location_analysis;
             
+            const gaugeValue = document.getElementById('gaugeValue');
+            const aqiClass = getAQIClass(analysis.aqi);
+            gaugeValue.textContent = analysis.aqi;
+            gaugeValue.className = `gauge-value ${aqiClass}`;
+            
+            const locationData = document.getElementById('locationData');
             locationData.innerHTML = `
                 <div class="analysis-item">
-                    <span class="analysis-label">Current AQI</span>
-                    <span class="analysis-value aqi-value">${analysis.estimated_aqi}</span>
+                    <span class="analysis-label">Air Quality Status</span>
+                    <span class="analysis-value ${aqiClass}">${getAQIStatus(analysis.aqi)}</span>
                 </div>
                 <div class="analysis-item">
-                    <span class="analysis-label">Air Quality</span>
-                    <span class="analysis-value">${analysis.air_quality_status}</span>
+                    <span class="analysis-label">Location</span>
+                    <span class="analysis-value">${analysis.city || location}</span>
+                </div>
+                ${analysis.main_pollutant ? `
+                <div class="analysis-item">
+                    <span class="analysis-label">Primary Pollutant</span>
+                    <span class="analysis-value">${analysis.main_pollutant.toUpperCase()}</span>
+                </div>
+                ` : ''}
+                <div class="analysis-item">
+                    <span class="analysis-label">Temperature</span>
+                    <span class="analysis-value">${analysis.temperature}°C</span>
                 </div>
                 <div class="analysis-item">
-                    <span class="analysis-label">Area Type</span>
-                    <span class="analysis-value">${analysis.area_type}</span>
+                    <span class="analysis-label">Humidity</span>
+                    <span class="analysis-value">${analysis.humidity}%</span>
                 </div>
                 <div class="analysis-item">
-                    <span class="analysis-label">Traffic Density</span>
-                    <span class="analysis-value">${analysis.traffic_density}</span>
+                    <span class="analysis-label">Wind Speed</span>
+                    <span class="analysis-value">${analysis.wind_speed} km/h</span>
                 </div>
                 <div class="analysis-item">
-                    <span class="analysis-label">Industrial Activity</span>
-                    <span class="analysis-value">${analysis.industrial_activity}</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="analysis-label">Vegetation Cover</span>
-                    <span class="analysis-value">${analysis.vegetation_cover}</span>
+                    <span class="analysis-label">Data Source</span>
+                    <span class="analysis-value">${analysis.data_source}</span>
                 </div>
             `;
+
+            // Display Python scientific analysis if available
+            if (data.scientific_analysis && data.scientific_analysis.meteorological_impact) {
+                const scientificSection = document.getElementById('scientificAnalysis');
+                const scientificContent = document.getElementById('scientificContent');
+                scientificSection.style.display = 'block';
+
+                const met = data.scientific_analysis.meteorological_impact;
+                const sources = data.scientific_analysis.pollution_sources || [];
+
+                scientificContent.innerHTML = `
+                    <div class="science-box">
+                        <h5 style="color: #22c55e; font-size: 0.95rem; margin-bottom: 0.75rem; font-weight: 600;">Meteorological Factors</h5>
+                        <div class="science-metric">
+                            <span class="science-label">Wind Dispersion</span>
+                            <span class="science-value">${(met.wind_factor * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="science-metric">
+                            <span class="science-label">Humidity Impact</span>
+                            <span class="science-value">${(met.humidity_factor * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="science-metric">
+                            <span class="science-label">Temperature Factor</span>
+                            <span class="science-value">${(met.temp_factor * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="science-metric">
+                            <span class="science-label">Overall Dispersion</span>
+                            <span class="science-value">${(met.overall_dispersion * 100).toFixed(0)}%</span>
+                        </div>
+                        <div class="science-metric">
+                            <span class="science-label">Intervention Favorability</span>
+                            <span class="science-value">${met.favorable_for_interventions ? 'Favorable' : 'Challenging'}</span>
+                        </div>
+                    </div>
+
+                    <h5 style="color: #ef4444; font-size: 0.95rem; margin: 1.5rem 0 0.75rem; font-weight: 600;">Pollution Sources</h5>
+                    ${sources.map(source => `
+                        <div class="pollution-source">
+                            <div class="source-header">
+                                <span class="source-name">${source.source}</span>
+                                <span class="source-contribution">${source.contribution_percent.toFixed(1)}%</span>
+                            </div>
+                            <div class="source-pollutants">Main pollutants: ${source.main_pollutants.join(', ')}</div>
+                        </div>
+                    `).join('')}
+                `;
+            }
             
             const interventionsData = document.getElementById('interventionsData');
             interventionsData.innerHTML = '';
             
-            data.interventions.forEach((intervention, index) => {
-                const priorityClass = `priority-${intervention.priority.toLowerCase()}`;
-                
-                const card = document.createElement('div');
-                card.className = 'intervention-card';
-                card.innerHTML = `
-                    <div class="intervention-header">
-                        <div>
-                            <h4 class="intervention-title">${index + 1}. ${intervention.title}</h4>
-                            <span class="intervention-priority ${priorityClass}">${intervention.priority} Priority</span>
-                        </div>
-                    </div>
+            if (data.interventions && data.interventions.length > 0) {
+                data.interventions.forEach((intervention, index) => {
+                    const priorityClass = `priority-${intervention.priority.toLowerCase()}`;
                     
-                    <p class="intervention-description">${intervention.description}</p>
-                    
-                    <div class="intervention-metrics">
-                        <div class="metric">
-                            <span class="metric-value">${intervention.estimated_cost}</span>
-                            <span class="metric-label">Estimated Cost</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-value">${intervention.expected_aqi_improvement}</span>
-                            <span class="metric-label">AQI Improvement</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-value">${intervention.implementation_time}</span>
-                            <span class="metric-label">Timeline</span>
-                        </div>
-                        <div class="metric">
-                            <span class="metric-value">${intervention.feasibility_score}</span>
-                            <span class="metric-label">Feasibility</span>
-                        </div>
-                    </div>
-                    
-                    ${intervention.budget_scaling ? `
-                        <div class="budget-scaling">
-                            <div class="budget-scaling-title">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                </svg>
-                                Budget Scaling Opportunity
+                    const card = document.createElement('div');
+                    card.className = 'intervention-card';
+                    card.innerHTML = `
+                        <div class="intervention-header">
+                            <div>
+                                <h4 class="intervention-title">${index + 1}. ${intervention.title}</h4>
+                                <span class="intervention-priority ${priorityClass}">${intervention.priority} Priority</span>
                             </div>
-                            <p style="color: #cbd5e1; font-size: 0.95rem;">${intervention.budget_scaling}</p>
                         </div>
-                    ` : ''}
-                `;
+                        
+                        <p class="intervention-description">${intervention.description}</p>
+                        
+                        <div class="intervention-metrics">
+                            <div class="metric">
+                                <span class="metric-value">${intervention.estimated_cost}</span>
+                                <span class="metric-label">Estimated Cost</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">${intervention.expected_aqi_improvement}</span>
+                                <span class="metric-label">AQI Improvement</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">${intervention.implementation_time}</span>
+                                <span class="metric-label">Timeline</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-value">${intervention.feasibility_score}</span>
+                                <span class="metric-label">Feasibility</span>
+                            </div>
+                        </div>
+                        
+                        ${intervention.budget_scaling ? `
+                            <div class="budget-scaling">
+                                <div class="budget-scaling-title">
+                                    Budget Optimization
+                                </div>
+                                <p style="color: #cbd5e1; font-size: 0.95rem;">${intervention.budget_scaling}</p>
+                            </div>
+                        ` : ''}
+                    `;
+                    
+                    interventionsData.appendChild(card);
+                });
+            }
+
+            if (data.optimization_summary) {
+                const optimizationSection = document.getElementById('optimizationSummary');
+                optimizationSection.style.display = 'block';
                 
-                interventionsData.appendChild(card);
-            });
+                const opt = data.optimization_summary;
+                optimizationSection.innerHTML = `
+                    <div class="optimization-card">
+                        <h4 class="optimization-title">Budget Optimization Analysis</h4>
+                        <div class="optimization-grid">
+                            <div class="optimization-metric">
+                                <span class="optimization-value">₹${opt.allocated_budget.toLocaleString('en-IN')}</span>
+                                <span class="optimization-label">Allocated Budget</span>
+                            </div>
+                            <div class="optimization-metric">
+                                <span class="optimization-value">${opt.budget_utilization_percent}%</span>
+                                <span class="optimization-label">Budget Used</span>
+                            </div>
+                            <div class="optimization-metric">
+                                <span class="optimization-value">${opt.total_improvement}</span>
+                                <span class="optimization-label">AQI Reduction</span>
+                            </div>
+                            <div class="optimization-metric">
+                                <span class="optimization-value">${opt.projected_aqi}</span>
+                                <span class="optimization-label">Projected AQI</span>
+                            </div>
+                            <div class="optimization-metric">
+                                <span class="optimization-value">${opt.improvement_percent}%</span>
+                                <span class="optimization-label">Improvement</span>
+                            </div>
+                            <div class="optimization-metric">
+                                <span class="optimization-value">${opt.roi_analysis}</span>
+                                <span class="optimization-label">Cost per Point</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
         }
     </script>
 </body>
