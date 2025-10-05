@@ -37,19 +37,20 @@ AirSense addresses the gap between air pollution awareness and actionable soluti
 - *Visualization*: Chart.js
 
 ## Quick Start
-
+<pre>
 bash
 git clone [https://github.com/Ayui12/airsense.git](https://github.com/Ayui12/AirSense.git)
 cd airsense/backend
 npm install
 
 # Configure environment variables
+
 echo "GEMINI_API_KEY=your_key" > .env
 echo "OPENWEATHER_API_KEY=your_key" >> .env
 echo "IQAIR_API_KEY=your_key" >> .env
 
 npm start
-
+</pre>
 
 *API Keys Required*:
 - [Google AI Studio](https://makersuite.google.com/app/apikey) (Required)
