@@ -140,7 +140,7 @@ Sample response:
 ## Screenshots
 
 [Homepage]
-<img width="1917" height="885" alt="image" src="https://github.com/user-attachments/assets/eca1bd11-71b5-4050-b6bb-415fa1178c12" />
+<img width="1885" height="938" alt="image" src="https://github.com/user-attachments/assets/052a3ba3-ceda-4893-9a5f-7fcf1bccb96e" />
 
 [Results]
 <img width="1895" height="949" alt="image" src="https://github.com/user-attachments/assets/7993c669-20e3-4093-ba3a-8b86a6570941" />
