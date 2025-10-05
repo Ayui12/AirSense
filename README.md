@@ -1,108 +1,95 @@
 # AirSense - AI-Powered Environmental Solutions
 
-AI-driven platform that analyzes air quality for any location and generates personalized, budget-optimized intervention recommendations for communities.
+Real-time air quality analysis platform combining live environmental data with Google Gemini 2.5 AI to generate budget-optimized intervention strategies for communities.
+
 ---
 
+## Overview
 
-## The Problem
+AirSense addresses the gap between air pollution awareness and actionable solutions by providing instant, location-specific environmental analysis with tailored interventions ranging from ₹25K to ₹20L.
 
-Communities struggle with air pollution but lack actionable, location-specific solutions that fit their budgets. Current environmental consulting is expensive and generic.
+## Core Features
 
-## Our Solution
+*Real-Time Data Integration*
+- Live AQI from IQAir and OpenWeather APIs with automatic fallback
+- Measured pollutant concentrations (PM2.5, PM10, NO2, SO2, O3, CO)
+- Current weather conditions and meteorological factors
+- Precise geocoding and location intelligence
 
-AirSense uses Google Gemini AI to provide instant environmental analysis and tailored intervention strategies for any location with budgets from ₹25K to ₹20L.
+*AI-Powered Analysis*
+- 5-6 prioritized interventions tailored to location context
+- Detailed cost breakdowns and implementation timelines
+- Expected AQI improvements (15-50 point reductions)
+- Budget scaling recommendations
 
-## Key Features
-
-**Smart Location Analysis**
-- Estimates current AQI and pollution sources
-- Identifies traffic density, industrial activity, vegetation cover
-- Classifies area type (residential, commercial, industrial)
-
-**AI-Generated Interventions**
-- 4-5 prioritized solutions tailored to location challenges
-- Cost breakdowns and implementation timelines
-- Expected AQI improvement projections (15-25 point reductions)
-- Budget scaling recommendations for enhanced impact
-
-**Modern User Experience**
-- Interactive budget slider (₹25K - ₹20L range)
-- Real-time analysis with loading states
-- Mobile-responsive glassmorphism design
-- Color-coded priority system
+*Professional Interface*
+- Interactive data visualizations with Chart.js
+- Multi-step loading states with progress tracking
+- Mobile-responsive dark theme design
+- Color-coded priority and AQI status indicators
 
 ## Tech Stack
 
-**Frontend**: HTML5, Vanilla JavaScript, CSS3 with glassmorphism design
-**Backend**: Node.js, Express.js with RESTful API design
-**AI**: Google Gemini AI (gemini-1.5-flash-8b) with advanced prompt engineering
-**Features**: Multi-model fallback, retry logic, error handling
+- *Frontend*: HTML5, JavaScript, CSS3
+- *Backend*: Node.js, Express.js
+- *AI*: Google Gemini 2.5 Flash
+- *Data*: IQAir API, OpenWeather API, Geocoding
+- *Visualization*: Chart.js
+
+## Quick Start
+
+bash
+git clone https://github.com/yourusername/airsense.git
+cd airsense/backend
+npm install
+
+# Configure environment variables
+echo "GEMINI_API_KEY=your_key" > .env
+echo "OPENWEATHER_API_KEY=your_key" >> .env
+echo "IQAIR_API_KEY=your_key" >> .env
+
+npm start
+
+
+*API Keys Required*:
+- [Google AI Studio](https://makersuite.google.com/app/apikey) (Required)
+- [OpenWeather](https://openweathermap.org/api) (Recommended)
+- [IQAir](https://www.iqair.com/air-pollution-data-api) (Optional)
 
 ## Architecture
 
-```
-User Input (Location + Budget)
-    ↓
-Express.js API Server
-    ↓
-Google Gemini AI Processing
-    ↓
-Structured JSON Response
-    ↓
-Dynamic Frontend Rendering
-```
 
-## Quick Setup
+User Input → API Server → Geocoding → Real-Time Data Fetch (IQAir/OpenWeather) 
+→ Context Analysis → Gemini 2.5 AI → Structured Response → Visualization
 
-```bash
-# Clone repository
-git clone https://github.com/yourusername/airsense.git
-cd airsense
 
-# Install dependencies
-cd backend
-npm install
+## Sample Output
 
-# Set environment variables
-echo "GEMINI_API_KEY=your_key_here" > .env
-echo "OPENWEATHER_API_KEY=your_key_here" > .env
-echo "IQAIR_API_KEY=your_key_here" > .env
-echo "PORT=3000" >> .env
+*Location Analysis*: Real-time AQI, pollutant concentrations, weather data, area classification
 
-# Start server
-cd backend
-npm start
-# Visit http://localhost:3000
-```
+*Interventions*: Technology solutions, infrastructure improvements, policy measures, community programs with cost estimates, timelines, feasibility scores, and expected impact
 
-**Get Gemini API Key**: Visit [Google AI Studio](https://makersuite.google.com/app/apikey) for free key
+*Visualizations*: Pollutant level charts, AQI improvement projections, environmental statistics
 
-## Demo Instructions
+## Key Differentiators
 
-**Test Locations**:
-- "Connaught Place, New Delhi" - High pollution urban area
-- "Bandra West, Mumbai" - Coastal mixed development  
-- "Electronic City, Bangalore" - IT hub with moderate pollution
+- Multi-source data verification with transparent attribution
+- Production-ready error handling and fallback systems
+- Scientific accuracy with measured pollutant data
+- Enterprise-grade professional interface
+- Budget-optimized recommendations with scaling guidance
 
-**Expected Output**:
-- Location analysis with AQI estimates and environmental factors
-- 4-5 interventions with costs, timelines, and feasibility scores
-- Budget optimization suggestions
+## Target Users
 
-```
+Local governments, NGOs, community groups, corporate CSR programs, environmental consultants
 
-## Technical Highlights
+## Requirements
 
-**AI Integration**: Advanced prompt engineering for location-specific environmental analysis
-**Resilient Architecture**: Multi-model fallback system with exponential backoff retry logic
-**Production Ready**: Comprehensive error handling, input validation, and scalable design
-**User Experience**: Smooth animations, responsive design, and intuitive interface
+- Node.js 14+
+- Modern browser with ES6 support
+- Internet connection for API access
 
-## Impact Potential
-
-**Target Users**: Community groups, local governments, NGOs, corporate CSR programs
-**Benefits**: 40-60% better budget utilization, higher implementation success rates
-**Scalability**: Framework applicable to cities worldwide with regional customization
+---
 
 ## Screenshots
 
