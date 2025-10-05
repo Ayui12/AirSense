@@ -64,6 +64,8 @@ npm install
 
 # Set environment variables
 echo "GEMINI_API_KEY=your_key_here" > .env
+echo "OPENWEATHER_API_KEY=your_key_here" > .env
+echo "IQAIR_API_KEY=your_key_here" > .env
 echo "PORT=3000" >> .env
 
 # Start server
