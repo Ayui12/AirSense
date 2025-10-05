@@ -155,28 +155,32 @@ function getDefaultWeather() {
 async function getCoordinates(location) {
     try {
         if (!OPENWEATHER_API_KEY) {
-            return { lat: 28.6139, lon: 77.2090, city: location };
+            throw new Error('Weather API not configured. Please add OPENWEATHER_API_KEY to your .env file');
         }
 
         const response = await axios.get(
             `http://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(location)}&limit=1&appid=${OPENWEATHER_API_KEY}`
         );
 
-        if (response.data && response.data.length > 0) {
-            const place = response.data[0];
-            return {
-                lat: place.lat,
-                lon: place.lon,
-                city: place.name,
-                state: place.state,
-                country: place.country
-            };
+        if (!response.data || response.data.length === 0) {
+            throw new Error(`Location "${location}" not found. Please enter a valid city name or address.`);
         }
 
-        return { lat: 28.6139, lon: 77.2090, city: location };
+        const place = response.data[0];
+        return {
+            lat: place.lat,
+            lon: place.lon,
+            city: place.name,
+            state: place.state,
+            country: place.country
+        };
+
     } catch (error) {
+        if (error.message.includes('not found')) {
+            throw error;
+        }
         console.log('Geocoding error:', error.message);
-        return { lat: 28.6139, lon: 77.2090, city: location };
+        throw new Error('Unable to verify location. Please check your internet connection and try again.');
     }
 }
 
@@ -323,96 +327,150 @@ Measured Pollutant Concentrations:
 - NO2: ${p.no2 ? p.no2 + ' μg/m³' : 'Not available'}
 - SO2: ${p.so2 ? p.so2 + ' μg/m³' : 'Not available'}
 - O3: ${p.o3 ? p.o3 + ' μg/m³' : 'Not available'}
+- CO: ${p.co ? p.co + ' μg/m³' : 'Not available'}
 Primary Pollutant: ${aqiData.main_pollutant || 'PM2.5'}`;
     }
 
-    const prompt = `You are an environmental consultant analyzing real-time air quality data. Generate practical intervention recommendations.
+    const prompt = `Analyze this air quality data and generate 5 intervention recommendations as JSON.
 
 LOCATION: ${location}
-DATA SOURCE: ${aqiData.source} (Accuracy: ${aqiData.accuracy})
-
-AIR QUALITY DATA:
-- Current AQI: ${aqiData.aqi} (${getAQICategory(aqiData.aqi)})
+AQI: ${aqiData.aqi} (${getAQICategory(aqiData.aqi)})
+Area: ${context.area_type} | Traffic: ${context.traffic_density} | Industrial: ${context.industrial_activity}
+Weather: ${weather.temperature}°C, ${weather.humidity}% humidity, ${weather.wind_speed} km/h wind
 ${pollutantInfo}
+Budget: ₹${parseInt(budget).toLocaleString('en-IN')}
 
-METEOROLOGICAL CONDITIONS:
-- Temperature: ${weather.temperature}°C (Feels like ${weather.feels_like}°C)
-- Humidity: ${weather.humidity}%
-- Wind Speed: ${weather.wind_speed} km/h
-- Atmospheric Pressure: ${weather.pressure} hPa
-- Visibility: ${weather.visibility} meters
+Generate EXACTLY 5 interventions covering: traffic control, technology, green infrastructure, policy, and community programs.
 
-LOCATION CHARACTERISTICS:
-- Area Type: ${context.area_type}
-- Traffic Density: ${context.traffic_density}
-- Industrial Activity: ${context.industrial_activity}
-
-BUDGET: ₹${parseInt(budget).toLocaleString('en-IN')}
-
-Generate 4-5 targeted interventions that:
-1. Address the primary pollutant (${aqiData.main_pollutant || 'PM2.5'})
-2. Consider current meteorological conditions
-3. Match the location type and pollution sources
-4. Fit within the specified budget
-5. Provide realistic AQI improvement estimates
-
-Intervention priority rules:
-- AQI 0-50: Maintenance and monitoring
-- AQI 51-100: Preventive measures
-- AQI 101-200: Active reduction strategies
-- AQI 201-300: Urgent intervention required
-- AQI 300+: Emergency response measures
-
-Return valid JSON only:
+Return ONLY this JSON (no markdown, no extra text):
 {
   "interventions": [
     {
       "title": "Intervention name",
-      "description": "Detailed explanation of the intervention and its effectiveness",
+      "description": "Clear 2-3 sentence description of what it does and why it works for this location",
       "priority": "High|Medium|Low",
       "estimated_cost": "₹X,XX,XXX - ₹Y,YY,YYY",
       "expected_aqi_improvement": "X-Y points",
       "implementation_time": "X weeks",
       "feasibility_score": "X.X/10",
-      "budget_scaling": "How additional investment improves outcomes",
-      "targets_pollutant": "${aqiData.main_pollutant || 'PM2.5'}"
+      "budget_scaling": "Brief note on how more budget helps",
+      "targets_pollutant": "${aqiData.main_pollutant || 'PM2.5'}",
+      "intervention_type": "Technology|Policy|Infrastructure|Community"
     }
   ]
 }`;
 
     try {
         const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key=${GEMINI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
             {
-                contents: [{ parts: [{ text: prompt }] }],
+                contents: [{ 
+                    parts: [{ text: prompt }] 
+                }],
                 generationConfig: {
                     temperature: 0.7,
-                    maxOutputTokens: 3000
-                }
+                    maxOutputTokens: 8192,
+                    topP: 0.95,
+                    topK: 64
+                },
+                safetySettings: [
+                    {
+                        category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+                        threshold: "BLOCK_NONE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HATE_SPEECH",
+                        threshold: "BLOCK_NONE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_HARASSMENT",
+                        threshold: "BLOCK_NONE"
+                    },
+                    {
+                        category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+                        threshold: "BLOCK_NONE"
+                    }
+                ]
             },
-            { headers: { 'Content-Type': 'application/json' } }
+            { 
+                headers: { 'Content-Type': 'application/json' },
+                timeout: 90000
+            }
         );
 
-        const content = response.data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (!content) throw new Error('Empty response from Gemini');
+        console.log('Gemini API Response Status:', response.status);
+        console.log('Response data keys:', Object.keys(response.data));
 
-        let cleanContent = content.trim()
-            .replace(/```json\n?/g, '')
-            .replace(/```\n?/g, '')
-            .trim();
-
-        const jsonMatch = cleanContent.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-            cleanContent = jsonMatch[0];
+        if (response.data.promptFeedback?.blockReason) {
+            console.log('Content was blocked:', response.data.promptFeedback.blockReason);
+            throw new Error('Content blocked by safety filters');
         }
 
+        let content = null;
+        let finishReason = 'UNKNOWN';
+
+        if (response.data.candidates && response.data.candidates.length > 0) {
+            const candidate = response.data.candidates[0];
+            finishReason = candidate.finishReason || 'UNKNOWN';
+            content = candidate.content?.parts?.[0]?.text ||
+                    candidate.text ||
+                    candidate.output;
+        }
+
+        if (!content && response.data.text) {
+            content = response.data.text;
+        }
+
+        if (!content) {
+            console.error('Full response data:', JSON.stringify(response.data, null, 2));
+            throw new Error('Empty response from Gemini');
+        }
+
+        console.log('Candidate finish reason:', finishReason);
+        console.log('Content extracted, length:', content.length);
+
+        if (finishReason === 'MAX_TOKENS') {
+            console.warn('Warning: Response was cut off due to token limit');
+        }
+
+        let cleanContent = content.trim();
+        cleanContent = cleanContent.replace(/```json\s*/g, '').replace(/```\s*/g, '');
+
+        const firstBrace = cleanContent.indexOf('{');
+        const lastBrace = cleanContent.lastIndexOf('}');
+
+        if (firstBrace === -1 || lastBrace === -1) {
+            throw new Error('No valid JSON found in response');
+        }
+
+        cleanContent = cleanContent.substring(firstBrace, lastBrace + 1);
+        cleanContent = cleanContent
+            .replace(/,\s*}/g, '}')
+            .replace(/,\s*]/g, ']')
+            .replace(/\n/g, ' ')
+            .replace(/\r/g, '')
+            .replace(/\t/g, ' ')
+            .replace(/\s+/g, ' ');
+
         const parsed = JSON.parse(cleanContent);
-        console.log(`Generated ${parsed.interventions?.length || 0} interventions using Gemini AI`);
-        return parsed.interventions || [];
+
+        if (!parsed.interventions || parsed.interventions.length === 0) {
+            throw new Error('No interventions generated');
+        }
+
+        console.log(`Generated ${parsed.interventions.length} interventions using Gemini 2.5 Flash`);
+        return parsed.interventions;
 
     } catch (error) {
-        console.log('Gemini API error:', error.message);
-        return getFallbackRecommendations(aqiData.aqi, budget, aqiData.main_pollutant);
+        console.error('Gemini API error details:', {
+            message: error.message,
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data
+        });
+
+        console.log('Using fallback recommendations');
+        return getFallbackRecommendations(aqiData.aqi, budget, aqiData.main_pollutant, context);
     }
 }
 
@@ -425,20 +483,91 @@ function getAQICategory(aqi) {
     return 'Hazardous';
 }
 
-function getFallbackRecommendations(aqi, budget, mainPollutant) {
-    return [
+function getFallbackRecommendations(aqi, budget, mainPollutant, context) {
+    const pollutant = mainPollutant || 'PM2.5';
+    const budgetNum = parseInt(budget);
+    
+    const recommendations = [
         {
-            title: `Air Purification System - ${mainPollutant || 'PM2.5'} Reduction`,
-            description: `Deploy HEPA-based filtration units targeting ${mainPollutant || 'PM2.5'} with IoT monitoring and automated operation based on real-time air quality measurements.`,
+            title: `Advanced ${pollutant} Air Filtration System`,
+            description: `Deploy industrial-grade HEPA filtration units specifically designed to capture ${pollutant} particles. These systems use multi-stage filtration including pre-filters, HEPA filters, and activated carbon layers. IoT sensors continuously monitor air quality and automatically adjust filtration intensity. Particularly effective in ${context.area_type} environments where ${pollutant} concentrations are elevated.`,
             priority: aqi > 150 ? 'High' : 'Medium',
-            estimated_cost: '₹2,50,000 - ₹8,00,000',
-            expected_aqi_improvement: '30-50 points',
+            estimated_cost: '₹2,50,000 - ₹6,00,000',
+            expected_aqi_improvement: aqi > 200 ? '35-50 points' : '25-40 points',
             implementation_time: '6-8 weeks',
             feasibility_score: '8.5/10',
-            budget_scaling: 'Additional investment enables multiple units with comprehensive coverage',
-            targets_pollutant: mainPollutant || 'PM2.5'
+            budget_scaling: 'Higher budget enables multiple units covering larger areas, smart integration with building HVAC systems, and extended warranty with maintenance',
+            targets_pollutant: pollutant,
+            intervention_type: 'Technology'
+        },
+        {
+            title: 'Smart Traffic Flow Optimization System',
+            description: `Implement AI-powered traffic management to reduce vehicle idling and congestion, major sources of NOx and PM emissions. System uses real-time traffic data, adaptive signal timing, and route optimization. Given the ${context.traffic_density} traffic density in this area, intelligent traffic management can significantly reduce vehicular emissions. Includes mobile app for citizen engagement and real-time pollution tracking.`,
+            priority: context.traffic_density === 'Very High' || context.traffic_density === 'High' ? 'High' : 'Medium',
+            estimated_cost: '₹3,00,000 - ₹8,00,000',
+            expected_aqi_improvement: '20-35 points',
+            implementation_time: '10-12 weeks',
+            feasibility_score: '7.8/10',
+            budget_scaling: 'Additional investment allows expansion to more intersections, integration with public transport schedules, and real-time pollution monitoring at traffic signals',
+            targets_pollutant: 'NO2',
+            intervention_type: 'Infrastructure'
+        },
+        {
+            title: 'Urban Green Buffer Zone Development',
+            description: `Create strategic green barriers using native plant species with high particulate matter absorption capacity. Plants like Neem, Peepal, and Ashoka are proven to filter air pollutants effectively. Design includes vertical gardens, pocket parks, and roadside plantations. Green infrastructure provides sustained pollution reduction while improving urban aesthetics and reducing urban heat island effects through natural cooling.`,
+            priority: 'Medium',
+            estimated_cost: '₹1,50,000 - ₹4,00,000',
+            expected_aqi_improvement: '15-25 points',
+            implementation_time: '8-16 weeks',
+            feasibility_score: '9.0/10',
+            budget_scaling: 'Higher budget enables larger coverage area, drip irrigation systems for maintenance, and integration of air quality monitoring stations within green zones',
+            targets_pollutant: 'PM10',
+            intervention_type: 'Infrastructure'
+        },
+        {
+            title: 'Comprehensive Dust Suppression Program',
+            description: `Multi-pronged approach to control dust emissions through mechanized road sweeping, water spraying systems, construction site management, and unpaved road treatment. Critical for ${context.area_type} areas where dust is a major contributor to particulate pollution. Includes deployment of anti-dust chemical sprays, covered transport for construction materials, and regular monitoring with enforcement mechanisms.`,
+            priority: aqi > 150 ? 'High' : 'Low',
+            estimated_cost: '₹1,00,000 - ₹3,00,000',
+            expected_aqi_improvement: '18-30 points',
+            implementation_time: '4-6 weeks',
+            feasibility_score: '8.8/10',
+            budget_scaling: 'Increased budget allows automated spraying systems, expanded coverage area, and integration with weather forecasting to prevent dust storms',
+            targets_pollutant: 'PM2.5',
+            intervention_type: 'Emergency'
+        },
+        {
+            title: 'Community Air Quality Awareness and Action Program',
+            description: `Establish community-driven air quality monitoring network with low-cost sensors, mobile app for real-time AQI updates, and citizen science initiatives. Includes educational campaigns, distribution of N95 masks during high pollution days, indoor air quality improvement guides, and coordination with local authorities for pollution complaints. Empowers citizens to take protective actions and advocate for cleaner air policies.`,
+            priority: 'Low',
+            estimated_cost: '₹75,000 - ₹2,00,000',
+            expected_aqi_improvement: '10-15 points',
+            implementation_time: '6-10 weeks',
+            feasibility_score: '9.2/10',
+            budget_scaling: 'Additional funding enables wider sensor deployment, professional air quality reports, school programs, and integration with local government environmental initiatives',
+            targets_pollutant: 'Multiple',
+            intervention_type: 'Community'
+        },
+        {
+            title: 'Industrial Emission Monitoring and Control System',
+            description: `Deploy Continuous Emission Monitoring Systems (CEMS) for ${context.industrial_activity} industrial activity level in the region. Real-time tracking of SO2, NOx, and particulate emissions with automated alerts for violations. Includes stack monitoring, fugitive emission detection, and compliance reporting dashboard. Works with industries to implement cleaner fuel alternatives and emission control technologies like scrubbers and electrostatic precipitators.`,
+            priority: context.industrial_activity === 'High' ? 'High' : 'Low',
+            estimated_cost: '₹4,00,000 - ₹10,00,000',
+            expected_aqi_improvement: '25-45 points',
+            implementation_time: '12-16 weeks',
+            feasibility_score: '7.5/10',
+            budget_scaling: 'Higher investment allows monitoring of more facilities, integration with satellite data for area-wide assessment, and incentive programs for industries adopting cleaner technologies',
+            targets_pollutant: 'SO2',
+            intervention_type: 'Policy'
         }
     ];
+
+    const affordable = recommendations.filter(r => {
+        const minCost = parseInt(r.estimated_cost.match(/₹([\d,]+)/)[1].replace(/,/g, ''));
+        return minCost <= budgetNum;
+    });
+
+    return affordable.length >= 5 ? affordable : recommendations;
 }
 
 app.get('/api/hello', (req, res) => {
@@ -471,15 +600,10 @@ app.post('/api/analyze', async (req, res) => {
         console.log(`Coordinates: ${coords.lat}, ${coords.lon}`);
         
         const aqiData = await getAccurateAQI(coords.lat, coords.lon, coords.city);
-        
         const weather = await getWeatherData(coords.lat, coords.lon);
-        
         const context = analyzeLocationContext(location);
-        
         const locationData = { location: coords.city, aqiData, weather, context, coords };
-        
         const pythonAnalysis = await runPythonAnalysis(locationData);
-        
         const pythonOptimization = await runPythonOptimization(budget, aqiData.aqi, {
             traffic_control: context.traffic_density === 'Very High' ? 1.2 : 1.0,
             air_purifier: aqiData.aqi > 150 ? 1.3 : 1.0,
@@ -528,10 +652,17 @@ app.post('/api/analyze', async (req, res) => {
         
     } catch (error) {
         console.error('Analysis error:', error.message);
-        res.status(500).json({ 
-            error: 'Unable to complete analysis',
-            message: error.message
-        });
+        
+        if (error.message.includes('Location not found') || error.message.includes('Unable to verify location')) {
+            res.status(400).json({ 
+                error: error.message
+            });
+        } else {
+            res.status(500).json({ 
+                error: 'Unable to complete analysis',
+                message: error.message
+            });
+        }
     }
 });
 

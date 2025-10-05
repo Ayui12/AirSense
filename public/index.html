@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AirSense - Real-Time Air Quality Intelligence</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -176,6 +177,13 @@
 
         .source-icon {
             font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(34, 197, 94, 0.1);
+            border-radius: 8px;
         }
 
         .source-text {
@@ -455,6 +463,61 @@
             font-size: 0.9rem;
             margin-top: 0.5rem;
         }
+
+        .chart-container {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+        }
+
+        .chart-title {
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid rgba(51, 65, 85, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(30, 41, 59, 0.8);
+            transform: translateY(-2px);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #22c55e;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
         
         .interventions-container {
             background: rgba(30, 41, 59, 0.5);
@@ -462,6 +525,34 @@
             border: 1px solid rgba(51, 65, 85, 0.5);
             border-radius: 20px;
             padding: 2.5rem;
+        }
+
+        .interventions-summary {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+
+        .summary-item {
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #22c55e;
+            display: block;
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
         }
         
         .intervention-card {
@@ -496,6 +587,8 @@
             justify-content: space-between;
             align-items: flex-start;
             margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
         
         .intervention-title {
@@ -503,6 +596,13 @@
             font-weight: 700;
             color: #ffffff;
             margin-bottom: 0.5rem;
+            flex: 1;
+        }
+
+        .intervention-badges {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
         }
         
         .intervention-priority {
@@ -512,6 +612,16 @@
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.025em;
+        }
+
+        .intervention-type {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
         
         .priority-high {
@@ -540,7 +650,7 @@
         
         .intervention-metrics {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 1rem;
         }
         
@@ -550,11 +660,13 @@
             border-radius: 12px;
             text-align: center;
             transition: all 0.3s ease;
+            border: 1px solid rgba(51, 65, 85, 0.3);
         }
 
         .metric:hover {
             background: rgba(30, 41, 59, 0.8);
             transform: translateY(-2px);
+            border-color: rgba(34, 197, 94, 0.3);
         }
         
         .metric-value {
@@ -585,114 +697,6 @@
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
-
-        .science-box {
-            background: rgba(34, 197, 94, 0.05);
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            border-radius: 12px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .science-metric {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid rgba(34, 197, 94, 0.1);
-        }
-
-        .science-metric:last-child {
-            border-bottom: none;
-        }
-
-        .science-label {
-            color: #94a3b8;
-            font-size: 0.9rem;
-        }
-
-        .science-value {
-            color: #22c55e;
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .pollution-source {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 3px solid #ef4444;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            border-radius: 0 8px 8px 0;
-        }
-
-        .source-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .source-name {
-            color: #ffffff;
-            font-weight: 600;
-            font-size: 1rem;
-        }
-
-        .source-contribution {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            padding: 0.25rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .source-pollutants {
-            color: #cbd5e1;
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
-        }
-
-        .optimization-card {
-            background: rgba(59, 130, 246, 0.1);
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-top: 2rem;
-        }
-
-        .optimization-title {
-            color: #3b82f6;
-            font-size: 1.3rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        .optimization-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-        }
-
-        .optimization-metric {
-            background: rgba(15, 23, 42, 0.6);
-            padding: 1.25rem;
-            border-radius: 12px;
-            text-align: center;
-        }
-
-        .optimization-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #3b82f6;
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .optimization-label {
-            color: #94a3b8;
-            font-size: 0.85rem;
         }
         
         .loading-overlay {
@@ -794,6 +798,7 @@
             border-radius: 12px;
             margin-top: 1rem;
             display: none;
+            text-align: center;
         }
         
         @media (max-width: 768px) {
@@ -822,6 +827,14 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .interventions-summary {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -839,11 +852,11 @@
             <div class="hero-content">
                 <div class="hero-text">
                     <div class="hero-badge">
-                        Real Environmental Data + GenAI Intelligence
+                        Real Environmental Data + Gemini 2.5 AI
                     </div>
                     <h1 class="hero-title">Welcome to Air Sense AI</h1>
                     <p class="hero-subtitle">
-                        Combining real-time environmental data with Gemini AI to generate accurate, implementable interventions for your community.
+                        Combining real-time environmental data with Gemini 2.5 Flash AI to generate accurate, implementable interventions for your community.
                     </p>
 
                     <div class="data-sources">
@@ -855,7 +868,7 @@
                             </div>
                         </div>
                         <div class="data-source">
-                            <div class="source-icon">GPS</div>
+                            <div class="source-icon">GEO</div>
                             <div class="source-text">
                                 <div class="source-name">Geocoding API</div>
                                 <div class="source-desc">Location Intel</div>
@@ -871,7 +884,7 @@
                         <div class="data-source">
                             <div class="source-icon">AI</div>
                             <div class="source-text">
-                                <div class="source-name">Gemini AI</div>
+                                <div class="source-name">Gemini 2.5 AI</div>
                                 <div class="source-desc">Smart Recommendations</div>
                             </div>
                         </div>
@@ -952,7 +965,7 @@
                 </div>
                 <div class="source-badge">
                     <span class="source-badge-icon">✓</span>
-                    <span>Gemini AI Recommendations</span>
+                    <span>Gemini 2.5 AI</span>
                 </div>
             </div>
             
@@ -969,9 +982,30 @@
 
                     <div id="locationData"></div>
                     
-                    <div id="scientificAnalysis" style="margin-top: 2rem; display: none;">
-                        <h4 style="color: #22c55e; font-size: 1.1rem; margin-bottom: 1rem; font-weight: 600;">Scientific Analysis</h4>
-                        <div id="scientificContent"></div>
+                    <div class="chart-container">
+                        <div class="chart-title">Pollutant Levels</div>
+                        <div class="chart-wrapper">
+                            <canvas id="pollutantChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-value" id="tempStat">--</span>
+                            <span class="stat-label">Temperature (°C)</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="humidityStat">--</span>
+                            <span class="stat-label">Humidity (%)</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="windStat">--</span>
+                            <span class="stat-label">Wind (km/h)</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value" id="pressureStat">--</span>
+                            <span class="stat-label">Pressure (hPa)</span>
+                        </div>
                     </div>
                 </div>
                 
@@ -979,9 +1013,30 @@
                     <h3 class="analysis-title">
                         AI-Generated Interventions
                     </h3>
-                    <div id="interventionsData"></div>
                     
-                    <div id="optimizationSummary" style="display: none; margin-top: 2rem;"></div>
+                    <div class="interventions-summary" id="interventionsSummary">
+                        <div class="summary-item">
+                            <span class="summary-value" id="totalInterventions">--</span>
+                            <span class="summary-label">Total Solutions</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-value" id="avgImprovement">--</span>
+                            <span class="summary-label">Avg AQI Reduction</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-value" id="highPriority">--</span>
+                            <span class="summary-label">High Priority</span>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-title">Expected AQI Improvement by Intervention</div>
+                        <div class="chart-wrapper">
+                            <canvas id="interventionChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="interventionsData"></div>
                 </div>
             </div>
         </div>
@@ -996,19 +1051,19 @@
             <div class="loading-steps">
                 <div class="loading-step" id="step1">
                     <div class="step-icon">1</div>
-                    <span>Fetching real-time AQI data</span>
+                    <span>Validating location and fetching coordinates</span>
                 </div>
                 <div class="loading-step" id="step2">
                     <div class="step-icon">2</div>
-                    <span>Analyzing weather & location data</span>
+                    <span>Fetching real-time AQI and weather data</span>
                 </div>
                 <div class="loading-step" id="step3">
                     <div class="step-icon">3</div>
-                    <span>Processing with Python analytics</span>
+                    <span>Python scientific analysis</span>
                 </div>
                 <div class="loading-step" id="step4">
                     <div class="step-icon">4</div>
-                    <span>Generating AI recommendations with Gemini</span>
+                    <span>Gemini 2.5 AI generating solutions</span>
                 </div>
             </div>
         </div>
@@ -1021,6 +1076,9 @@
         const budgetValue = document.getElementById('budgetValue');
         const errorMessage = document.getElementById('errorMessage');
         
+        let pollutantChart = null;
+        let interventionChart = null;
+        
         budgetSlider.addEventListener('input', function() {
             const value = parseInt(this.value);
             budgetValue.textContent = value.toLocaleString('en-IN');
@@ -1029,8 +1087,14 @@
         document.getElementById('analysisForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const location = document.getElementById('location').value;
+            const location = document.getElementById('location').value.trim();
             const budget = document.getElementById('budget').value;
+            
+            if (!location) {
+                errorMessage.textContent = 'Please enter a location';
+                errorMessage.style.display = 'block';
+                return;
+            }
             
             errorMessage.style.display = 'none';
             await analyzeLocation(location, budget);
@@ -1066,14 +1130,10 @@
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Server returned ${response.status}`);
-                }
-                
                 const analysis = await response.json();
                 
-                if (analysis.error) {
-                    throw new Error(analysis.error);
+                if (!response.ok || analysis.error) {
+                    throw new Error(analysis.error || analysis.message || `Server returned ${response.status}`);
                 }
                 
                 displayResults(analysis, location, budget);
@@ -1085,7 +1145,7 @@
                 
             } catch (error) {
                 console.error('Analysis failed:', error);
-                errorMessage.textContent = `Error: ${error.message}. Please ensure the server is running on port 3000.`;
+                errorMessage.textContent = error.message;
                 errorMessage.style.display = 'block';
             } finally {
                 document.getElementById('loadingOverlay').style.display = 'none';
@@ -1109,6 +1169,203 @@
             if (aqi <= 200) return 'Unhealthy';
             if (aqi <= 300) return 'Very Unhealthy';
             return 'Hazardous';
+        }
+
+        function createPollutantChart(pollutants) {
+            const canvas = document.getElementById('pollutantChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            if (pollutantChart) {
+                pollutantChart.destroy();
+            }
+            
+            const labels = [];
+            const data = [];
+            const colors = [];
+            
+            if (pollutants.pm25 && pollutants.pm25 > 0) {
+                labels.push('PM2.5');
+                data.push(pollutants.pm25);
+                colors.push('rgba(239, 68, 68, 0.8)');
+            }
+            if (pollutants.pm10 && pollutants.pm10 > 0) {
+                labels.push('PM10');
+                data.push(pollutants.pm10);
+                colors.push('rgba(245, 158, 11, 0.8)');
+            }
+            if (pollutants.no2 && pollutants.no2 > 0) {
+                labels.push('NO₂');
+                data.push(pollutants.no2);
+                colors.push('rgba(59, 130, 246, 0.8)');
+            }
+            if (pollutants.so2 && pollutants.so2 > 0) {
+                labels.push('SO₂');
+                data.push(pollutants.so2);
+                colors.push('rgba(168, 85, 247, 0.8)');
+            }
+            if (pollutants.o3 && pollutants.o3 > 0) {
+                labels.push('O₃');
+                data.push(pollutants.o3);
+                colors.push('rgba(34, 197, 94, 0.8)');
+            }
+            if (pollutants.co && pollutants.co > 0) {
+                labels.push('CO');
+                data.push(pollutants.co / 100);
+                colors.push('rgba(236, 72, 153, 0.8)');
+            }
+            
+            if (labels.length === 0) {
+                canvas.parentElement.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 2rem;">Detailed pollutant data not available</p>';
+                return;
+            }
+            
+            pollutantChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Concentration (μg/m³)',
+                        data: data,
+                        backgroundColor: colors,
+                        borderColor: colors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: 'rgba(34, 197, 94, 0.3)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { 
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: { 
+                                color: 'rgba(51, 65, 85, 0.3)',
+                                drawBorder: false
+                            }
+                        },
+                        x: {
+                            ticks: { 
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createInterventionChart(interventions) {
+            const canvas = document.getElementById('interventionChart');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            if (interventionChart) {
+                interventionChart.destroy();
+            }
+            
+            const labels = interventions.map((i, idx) => `Solution ${idx + 1}`);
+            const improvements = interventions.map(i => {
+                const improvementStr = i.expected_aqi_improvement || '';
+                
+                const rangeMatch = improvementStr.match(/(\d+)\s*-\s*(\d+)/);
+                if (rangeMatch) {
+                    return (parseInt(rangeMatch[1]) + parseInt(rangeMatch[2])) / 2;
+                }
+                
+                const singleMatch = improvementStr.match(/(\d+)/);
+                if (singleMatch) {
+                    return parseInt(singleMatch[1]);
+                }
+                
+                return 10;
+            });
+            
+            const priorityColors = interventions.map(i => {
+                if (i.priority === 'High') return 'rgba(239, 68, 68, 0.8)';
+                if (i.priority === 'Medium') return 'rgba(245, 158, 11, 0.8)';
+                return 'rgba(34, 197, 94, 0.8)';
+            });
+            
+            interventionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'AQI Improvement (points)',
+                        data: improvements,
+                        backgroundColor: priorityColors,
+                        borderColor: priorityColors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#ffffff',
+                            bodyColor: '#cbd5e1',
+                            borderColor: 'rgba(34, 197, 94, 0.3)',
+                            borderWidth: 1,
+                            padding: 12,
+                            callbacks: {
+                                label: function(context) {
+                                    return `Expected improvement: ${context.parsed.x} AQI points`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            min: 0,
+                            ticks: { 
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: { 
+                                color: 'rgba(51, 65, 85, 0.3)',
+                                drawBorder: false
+                            }
+                        },
+                        y: {
+                            ticks: { 
+                                color: '#94a3b8',
+                                font: { size: 11 }
+                            },
+                            grid: { display: false }
+                        }
+                    }
+                }
+            });
         }
         
         function displayResults(data, location, budget) {
@@ -1136,16 +1393,12 @@
                 </div>
                 ` : ''}
                 <div class="analysis-item">
-                    <span class="analysis-label">Temperature</span>
-                    <span class="analysis-value">${analysis.temperature}°C</span>
+                    <span class="analysis-label">Area Type</span>
+                    <span class="analysis-value">${analysis.area_type}</span>
                 </div>
                 <div class="analysis-item">
-                    <span class="analysis-label">Humidity</span>
-                    <span class="analysis-value">${analysis.humidity}%</span>
-                </div>
-                <div class="analysis-item">
-                    <span class="analysis-label">Wind Speed</span>
-                    <span class="analysis-value">${analysis.wind_speed} km/h</span>
+                    <span class="analysis-label">Traffic Density</span>
+                    <span class="analysis-value">${analysis.traffic_density}</span>
                 </div>
                 <div class="analysis-item">
                     <span class="analysis-label">Data Source</span>
@@ -1153,57 +1406,34 @@
                 </div>
             `;
 
-            // Display Python scientific analysis if available
-            if (data.scientific_analysis && data.scientific_analysis.meteorological_impact) {
-                const scientificSection = document.getElementById('scientificAnalysis');
-                const scientificContent = document.getElementById('scientificContent');
-                scientificSection.style.display = 'block';
+            document.getElementById('tempStat').textContent = analysis.temperature;
+            document.getElementById('humidityStat').textContent = analysis.humidity;
+            document.getElementById('windStat').textContent = analysis.wind_speed;
+            document.getElementById('pressureStat').textContent = analysis.pressure;
 
-                const met = data.scientific_analysis.meteorological_impact;
-                const sources = data.scientific_analysis.pollution_sources || [];
-
-                scientificContent.innerHTML = `
-                    <div class="science-box">
-                        <h5 style="color: #22c55e; font-size: 0.95rem; margin-bottom: 0.75rem; font-weight: 600;">Meteorological Factors</h5>
-                        <div class="science-metric">
-                            <span class="science-label">Wind Dispersion</span>
-                            <span class="science-value">${(met.wind_factor * 100).toFixed(0)}%</span>
-                        </div>
-                        <div class="science-metric">
-                            <span class="science-label">Humidity Impact</span>
-                            <span class="science-value">${(met.humidity_factor * 100).toFixed(0)}%</span>
-                        </div>
-                        <div class="science-metric">
-                            <span class="science-label">Temperature Factor</span>
-                            <span class="science-value">${(met.temp_factor * 100).toFixed(0)}%</span>
-                        </div>
-                        <div class="science-metric">
-                            <span class="science-label">Overall Dispersion</span>
-                            <span class="science-value">${(met.overall_dispersion * 100).toFixed(0)}%</span>
-                        </div>
-                        <div class="science-metric">
-                            <span class="science-label">Intervention Favorability</span>
-                            <span class="science-value">${met.favorable_for_interventions ? 'Favorable' : 'Challenging'}</span>
-                        </div>
-                    </div>
-
-                    <h5 style="color: #ef4444; font-size: 0.95rem; margin: 1.5rem 0 0.75rem; font-weight: 600;">Pollution Sources</h5>
-                    ${sources.map(source => `
-                        <div class="pollution-source">
-                            <div class="source-header">
-                                <span class="source-name">${source.source}</span>
-                                <span class="source-contribution">${source.contribution_percent.toFixed(1)}%</span>
-                            </div>
-                            <div class="source-pollutants">Main pollutants: ${source.main_pollutants.join(', ')}</div>
-                        </div>
-                    `).join('')}
-                `;
+            if (analysis.pollutant_concentrations) {
+                createPollutantChart(analysis.pollutant_concentrations);
             }
             
             const interventionsData = document.getElementById('interventionsData');
             interventionsData.innerHTML = '';
             
             if (data.interventions && data.interventions.length > 0) {
+                const highPriority = data.interventions.filter(i => i.priority === 'High').length;
+                const avgImprovement = data.interventions.reduce((sum, i) => {
+                    const match = i.expected_aqi_improvement.match(/(\d+)-(\d+)/);
+                    if (match) {
+                        return sum + (parseInt(match[1]) + parseInt(match[2])) / 2;
+                    }
+                    return sum;
+                }, 0) / data.interventions.length;
+
+                document.getElementById('totalInterventions').textContent = data.interventions.length;
+                document.getElementById('avgImprovement').textContent = Math.round(avgImprovement);
+                document.getElementById('highPriority').textContent = highPriority;
+                
+                createInterventionChart(data.interventions);
+
                 data.interventions.forEach((intervention, index) => {
                     const priorityClass = `priority-${intervention.priority.toLowerCase()}`;
                     
@@ -1211,9 +1441,12 @@
                     card.className = 'intervention-card';
                     card.innerHTML = `
                         <div class="intervention-header">
-                            <div>
+                            <div style="flex: 1;">
                                 <h4 class="intervention-title">${index + 1}. ${intervention.title}</h4>
-                                <span class="intervention-priority ${priorityClass}">${intervention.priority} Priority</span>
+                            </div>
+                            <div class="intervention-badges">
+                                <span class="intervention-priority ${priorityClass}">${intervention.priority}</span>
+                                ${intervention.intervention_type ? `<span class="intervention-type">${intervention.intervention_type}</span>` : ''}
                             </div>
                         </div>
                         
@@ -1236,6 +1469,12 @@
                                 <span class="metric-value">${intervention.feasibility_score}</span>
                                 <span class="metric-label">Feasibility</span>
                             </div>
+                            ${intervention.targets_pollutant ? `
+                            <div class="metric">
+                                <span class="metric-value">${intervention.targets_pollutant}</span>
+                                <span class="metric-label">Targets</span>
+                            </div>
+                            ` : ''}
                         </div>
                         
                         ${intervention.budget_scaling ? `
@@ -1250,44 +1489,8 @@
                     
                     interventionsData.appendChild(card);
                 });
-            }
-
-            if (data.optimization_summary) {
-                const optimizationSection = document.getElementById('optimizationSummary');
-                optimizationSection.style.display = 'block';
-                
-                const opt = data.optimization_summary;
-                optimizationSection.innerHTML = `
-                    <div class="optimization-card">
-                        <h4 class="optimization-title">Budget Optimization Analysis</h4>
-                        <div class="optimization-grid">
-                            <div class="optimization-metric">
-                                <span class="optimization-value">₹${opt.allocated_budget.toLocaleString('en-IN')}</span>
-                                <span class="optimization-label">Allocated Budget</span>
-                            </div>
-                            <div class="optimization-metric">
-                                <span class="optimization-value">${opt.budget_utilization_percent}%</span>
-                                <span class="optimization-label">Budget Used</span>
-                            </div>
-                            <div class="optimization-metric">
-                                <span class="optimization-value">${opt.total_improvement}</span>
-                                <span class="optimization-label">AQI Reduction</span>
-                            </div>
-                            <div class="optimization-metric">
-                                <span class="optimization-value">${opt.projected_aqi}</span>
-                                <span class="optimization-label">Projected AQI</span>
-                            </div>
-                            <div class="optimization-metric">
-                                <span class="optimization-value">${opt.improvement_percent}%</span>
-                                <span class="optimization-label">Improvement</span>
-                            </div>
-                            <div class="optimization-metric">
-                                <span class="optimization-value">${opt.roi_analysis}</span>
-                                <span class="optimization-label">Cost per Point</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+            } else {
+                interventionsData.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 2rem;">No interventions generated. Please try again.</p>';
             }
         }
     </script>
