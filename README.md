@@ -143,8 +143,9 @@ Sample response:
 <img width="1885" height="938" alt="image" src="https://github.com/user-attachments/assets/052a3ba3-ceda-4893-9a5f-7fcf1bccb96e" />
 
 [Results]
-<img width="1895" height="949" alt="image" src="https://github.com/user-attachments/assets/7993c669-20e3-4093-ba3a-8b86a6570941" />
-<img width="1856" height="872" alt="image" src="https://github.com/user-attachments/assets/502f157d-dcf2-476a-b289-e5355d35b645" />
+![WhatsApp Image 2025-10-05 at 23 59 30_e34dce83](https://github.com/user-attachments/assets/e91ca5a4-d4db-4b0a-8a7c-1caceef773e9)
+![WhatsApp Image 2025-10-05 at 23 59 20_cda5d010](https://github.com/user-attachments/assets/427d0496-10df-41be-999f-9a420aeeb683)
+
 
 
 
