@@ -60,6 +60,7 @@ git clone https://github.com/yourusername/airsense.git
 cd airsense
 
 # Install dependencies
+cd backend
 npm install
 
 # Set environment variables
@@ -69,6 +70,7 @@ echo "IQAIR_API_KEY=your_key_here" > .env
 echo "PORT=3000" >> .env
 
 # Start server
+cd backend
 npm start
 # Visit http://localhost:3000
 ```
@@ -87,41 +89,6 @@ npm start
 - 4-5 interventions with costs, timelines, and feasibility scores
 - Budget optimization suggestions
 
-## API Endpoints
-
-**GET /api/test** - Verify Gemini AI connection
-**POST /api/analyze** - Main analysis endpoint
-
-Sample request:
-```json
-{
-  "location": "Connaught Place, New Delhi",
-  "budget": "200000"
-}
-```
-
-Sample response:
-```json
-{
-  "location_analysis": {
-    "estimated_aqi": 250,
-    "air_quality_status": "Poor",
-    "area_type": "Mixed Development",
-    "traffic_density": "High",
-    "industrial_activity": "Medium",
-    "vegetation_cover": "Low"
-  },
-  "interventions": [
-    {
-      "title": "Smart Traffic Management System",
-      "priority": "High",
-      "estimated_cost": "₹1,20,000",
-      "expected_aqi_improvement": "15-20 points",
-      "implementation_time": "3 months",
-      "feasibility_score": "8/10"
-    }
-  ]
-}
 ```
 
 ## Technical Highlights
