@@ -39,7 +39,7 @@ AirSense addresses the gap between air pollution awareness and actionable soluti
 ## Quick Start
 
 bash
-git clone [https://github.com/yourusername/airsense.git](https://github.com/Ayui12/AirSense.git)
+git clone [https://github.com/Ayui12/airsense.git](https://github.com/Ayui12/AirSense.git)
 cd airsense/backend
 npm install
 
